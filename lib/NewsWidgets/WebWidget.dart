@@ -43,9 +43,9 @@ class _WebWidgetState extends State<WebWidget> {
     //     ),
     // );
     return WebviewScaffold(
-      url: widget._newsDataModel.title,
-      //withZoom: false,
-     // withLocalStorage: true,
+      url: widget._newsDataModel.url,
+      withZoom: false,
+     withLocalStorage: true,
       withJavascript: true,
       appCacheEnabled: true,
       appBar: AppBar(

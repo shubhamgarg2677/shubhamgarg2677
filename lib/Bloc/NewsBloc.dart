@@ -10,24 +10,24 @@ class NewsBloc {
 
   StreamController _newslistcontroller;
 
-  StreamSink<ApiResponse<List<NewsDataModel>>> get newsListSink =>
+  StreamSink<ApiResponse<Map<int,Map<int,Map<int,NewsDataModel>>>>> get newsListSink =>
       _newslistcontroller.sink;
 
-  Stream<ApiResponse<List<NewsDataModel>>> get newsListStream =>
+  Stream<ApiResponse<Map<int,Map<int,Map<int,NewsDataModel>>>>> get newsListStream =>
       _newslistcontroller.stream;
 
   NewsBloc(int country,int category,int limit,int offset)
   {
     _fetchNews = new FetchNews();
-    _newslistcontroller = BehaviorSubject<ApiResponse<List<NewsDataModel>>>();
+    _newslistcontroller = BehaviorSubject<ApiResponse<Map<int,Map<int,Map<int,NewsDataModel>>>>>();
     fetchCountryList(country, category, limit, offset);
   }
 
   fetchCountryList(int country,int category,int limit,int offset) async {
     newsListSink.add(ApiResponse.loading('Fetching News'));
     try {
-      List<NewsDataModel> countries = await _fetchNews.fetch_news_list(country, category, limit, offset);
-      newsListSink.add(ApiResponse.completed(countries));
+      Map<int,Map<int,Map<int,NewsDataModel>>> new_content = await _fetchNews.fetch_news_list(country, category, limit, offset);
+      newsListSink.add(ApiResponse.completed(new_content));
     } catch (e) {
       newsListSink.add(ApiResponse.error(e.toString()));
       print(e);

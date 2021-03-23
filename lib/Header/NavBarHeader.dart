@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:news_website/Bloc/CountryBloc.dart';
 import 'package:news_website/Helper/ApiResponse.dart';
 import 'package:news_website/Models/CountryModel.dart';
@@ -17,14 +18,12 @@ class NavBarHeader extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     _countryBloc=new CountryBloc();
-    DateTime now=DateTime.now().toLocal();
-    DateFormat _format=new DateFormat("hh 'o''clock' a ,E ,zzzz");
-    //String time_string =_format.locale.format(now);
 
     return LayoutBuilder(
       builder: (context,constraints)
       {
-        bool mobile=constraints.maxWidth<600 ? true : false;
+         bool mobile=constraints.maxWidth<600 ? true : false;
+         bool mid_mobile=constraints.maxWidth<800 ? true : false;
          bool small_mobile=constraints.maxWidth<400 ? true : false;
 
         double _logoSize= mobile 
@@ -38,120 +37,138 @@ class NavBarHeader extends StatelessWidget{
 
         return Container(
           height: _logoSize+32,
-          color: AppColor.backGrey,
+          color: AppColor.appColor,
           padding: EdgeInsets.all(12),
           child: Row(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: _logoSize,
-                    height: _logoSize,
-                    alignment: Alignment.center,
-                    child: Image.asset("images/fire_logo.png",fit: BoxFit.contain,),
-                    margin: EdgeInsets.only(right: 8),
-                  ),
-                  SizedBox(height: 8,),
-                  Text(
-                    "TheDigitalFire",
-                    style: TextStyle(
-                      fontSize: _appNameSize,
-                      color: AppColor.textGrey,
-                      fontWeight: FontWeight.w800,
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: _logoSize,
+                      height: _logoSize,
+                      alignment: Alignment.center,
+                      child: Image.asset("images/fire_logo.jpg",fit: BoxFit.contain,),
+                      margin: EdgeInsets.only(right: 8),
                     ),
+                    SizedBox(height: 8,),
+                    Flexible(
+                      child: Text(
+                        "TheDigitalFire",
+                        style: TextStyle(
+                          fontSize: _appNameSize,
+                          color: AppColor.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        ),
                     ),
-                ],
+                  ],
+                ),
               ),
-              !small_mobile ? Expanded(
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(right: 12,left: 12,),
-                        child: Icon(
-                          greeting_icon(),
-                          color: AppColor.textGrey,
-                          size: _appNameSize,
-                          ),
-                      ),
-                      Column(
+              !small_mobile ? Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 12,left: 12,),
+                      child: Icon(
+                        greeting_icon(),
+                        color: AppColor.white,
+                        size: _appNameSize,
+                        ),
+                    ),
+                    Flexible(
+                      child: Column(
                        mainAxisAlignment: MainAxisAlignment.center,
                        crossAxisAlignment: CrossAxisAlignment.start,
                        mainAxisSize: MainAxisSize.min,
                        children: [
-                         Text(
-                        greeting(),
-                        style: TextStyle(
-                          fontSize: _greetingSize,
-                          color: AppColor.textBlack,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        Flexible(
+                          child: Text(
+                          greeting(),
+                          style: TextStyle(
+                            fontSize: _greetingSize,
+                            color: AppColor.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          ),
                         ),
                         SizedBox(height: 2,),
-                        Container(
-                          height: _timeSize,
+                        Flexible(
                           child: Text(
-                            now.timeZoneName,
+                            Jiffy().yMMMMEEEEdjm .toString(),
                           style: TextStyle(
                             fontSize: _timeSize,
-                            color: AppColor.textGrey,
+                            color: AppColor.backGrey,
                             fontWeight: FontWeight.w500,
                           ),
                           ),
                         ),
                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 ) : SizedBox(width:1,),
-              StreamBuilder<ApiResponse<List<CountryModel>>>(
-                stream: _countryBloc.countryListStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    switch (snapshot.data.status) {
-                      case Status.LOADING:
-                        return Container(
-                          height: 20,
-                          width: 20,
-                          child: ShowProgress(),
-                        );
-                        break;
-                      case Status.COMPLETED:
-                        return Consumer<CountryProvider>(
-                          builder: (context, countyprovider,child) {
-                            return DropdownButton(
-                              value: countyprovider.countryModel.id,
-                              underline: null,
-                              items: get_drop_down_list(mobile, snapshot.data.data),
-                              onChanged: (value)
-                              {
-                                countyprovider.set_country(snapshot.data.data.singleWhere((element) => element.id==value));
-                              },
-                            );
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    StreamBuilder<ApiResponse<List<CountryModel>>>(
+                      stream: _countryBloc.countryListStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data.status) {
+                            case Status.LOADING:
+                              return Container(
+                                height: 20,
+                                width: 20,
+                                child: ShowProgress(),
+                              );
+                              break;
+                            case Status.COMPLETED:
+                              return Consumer<CountryProvider>(
+                                builder: (context, countyprovider,child) {
+                                  return DropdownButton(
+                                    value: countyprovider.countryModel.id,
+                                    underline: null,
+                                    style: TextStyle(color: AppColor.white),
+                                    iconDisabledColor: AppColor.white,
+                                    iconEnabledColor: AppColor.white,
+                                    dropdownColor: AppColor.textBlack,
+                                    items: get_drop_down_list(mid_mobile, snapshot.data.data),
+                                    onChanged: (value)
+                                    {
+                                      countyprovider.set_country(snapshot.data.data.singleWhere((element) => element.id==value));
+                                    },
+                                  );
+                                }
+                              );
+                              break;
+                            case Status.ERROR:
+                              return Container(
+                                height: 20,
+                                width: 20,
+                                child: ShowProgress(),
+                              );
+                              break;
                           }
-                        );
-                        break;
-                      case Status.ERROR:
-                        return Container(
-                          height: 20,
-                          width: 20,
-                          child: ShowProgress(),
-                        );
-                        break;
-                    }
-                  }
-                  return Container();
-                }
+                        }
+                        return Container();
+                      }
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -176,10 +193,10 @@ class NavBarHeader extends StatelessWidget{
 
   String greeting() {
   var hour = DateTime.now().toLocal().hour;
-  if (hour < 12) {
+  if (4 < hour && hour < 12) {
     return 'Good morning,';
   }
-  if (hour < 17) {
+  if (12 <= hour && hour < 17) {
     return 'Good afternoon,';
   }
   return 'Good evening,';
@@ -187,10 +204,10 @@ class NavBarHeader extends StatelessWidget{
 
   IconData greeting_icon() {
   var hour = DateTime.now().toLocal().hour;
-  if (hour < 12) {
+  if (4 < hour && hour < 12) {
     return Icons.wb_sunny_outlined;
   }
-  if (hour < 17) {
+  if (12 <= hour && hour < 1) {
    return Icons.wb_sunny_rounded;
   }
   return Icons.nightlight_round;

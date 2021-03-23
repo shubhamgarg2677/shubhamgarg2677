@@ -4,12 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:news_website/Models/CategoryModel.dart';
+import 'package:news_website/NewsWidgets/NewsImage.dart';
 import 'package:news_website/NewsWidgets/WebWidget.dart';
 import 'package:news_website/Utils/AppColor.dart';
 import 'package:news_website/Utils/Dimen.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../Models/NewsDataModel.dart';
 
 class NewsWidgetElementHorizontal extends StatelessWidget{
@@ -58,88 +58,97 @@ class NewsWidgetElementHorizontal extends StatelessWidget{
               ),],
               color: AppColor.white,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Flexible(
-                    flex: 3,
-                    child: Container(
-                    //width: _boxWidth/2-8,
-                      margin: EdgeInsets.only(left: 8,top: 8,bottom: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(_borderRadius),
-                      color: AppColor.backGrey,
-                      image: DecorationImage(
-                        image: _newsDataModel.urltoimage.isNotEmpty
-                        ? CachedNetworkImageProvider(
-                            _newsDataModel.urltoimage,
-                          imageRenderMethodForWeb: ImageRenderMethodForWeb.HtmlImage,
-                        )
-                        : AssetImage("images/fire_logo.png",),
-                        fit: BoxFit.fill
+            child: IntrinsicHeight(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment:CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                      flex: 3,
+                      child: Container(
+                      //width: _boxWidth/2-8,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(_borderRadius),
+                            color: AppColor.appColor,
+                            image: DecorationImage(image: AssetImage("images/fire_logo.jpg",),)
                         ),
+                        margin: EdgeInsets.only(left: 8,top: 8,bottom: 8,right: 8),
+                        clipBehavior: Clip.hardEdge,
+                        // child: _newsDataModel.urltoimage.isNotEmpty
+                        //     ? Image.network(_newsDataModel.urltoimage,
+                        //   headers:  {"Access-Control-Allow-Origin": "*"},
+                        //   fit: BoxFit.cover,
+                        // ) : Image.asset("images/fire_logo.png",)
+                         child: get_news_image(_newsDataModel.urltoimage,_borderRadius),
+                      // decoration: BoxDecoration(
+                      //   borderRadius: BorderRadius.circular(_borderRadius),
+                      //   color: AppColor.backGrey,
+                      //   image: DecorationImage(
+                      //     image: _newsDataModel.urltoimage.isNotEmpty
+                      //     ? CachedNetworkImageProvider(
+                      //         _newsDataModel.urltoimage,
+                      //       headers: {"Access-Control-Allow-Origin": "*"},
+                      //       imageRenderMethodForWeb: ImageRenderMethodForWeb.HtmlImage,
+                      //     )
+                      //     : AssetImage("images/fire_logo.png",),
+                      //     fit: BoxFit.cover,
+                      //     ),
+                      // ),
                     ),
                   ),
-                ),
-                Flexible(
-                    flex: 4,
-                    fit: FlexFit.tight,
-                    child: Container(
-                    //width: _boxWidth/2-8,
-                    padding: EdgeInsets.all(8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        SizedBox(height: mobile?4:12,),
-                        _newsDataModel.category.toString().isNotEmpty
-                        ? Text(
-                          category_list.length>0 ? category_list[_newsDataModel.category.toInt()].fullName.toString() : "",
-                          style: TextStyle(
-                            color: AppColor.textGrey,
-                            fontSize: _tagSize,
-                            fontWeight: FontWeight.w200,
-                          ),
-                          maxLines: 1,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                          )
-                        : SizedBox(height: 1,),
+                  Expanded(
+                      flex: 4,
+                      child: Container(
+                      //width: _boxWidth/2-8,
+                      padding: EdgeInsets.all(8),
+                      child: ListView(
+                        scrollDirection: Axis.vertical,
+                        //physics: NeverScrollableScrollPhysics(),
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        // mainAxisSize: MainAxisSize.max,
+                        children: [
                           SizedBox(height: mobile?4:12,),
-                        _newsDataModel.title.isNotEmpty
-                         ? Text(
-                          _newsDataModel.title,
-                          style: TextStyle(
-                            color: AppColor.textBlack,
-                            fontSize: _headlineSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 3,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                          ) : SizedBox(height: 1,),
-                         SizedBox(height: mobile?4:12,),
-                        _newsDataModel.description.isNotEmpty
-                         ? Expanded(
-                           child: Text(
-                            "${get_description(_newsDataModel.description)}...",
+                          _newsDataModel.category.toString().isNotEmpty
+                          ? Text(
+                            category_list.length>0 ? category_list[_newsDataModel.category.toInt()].fullName.toString() : "",
                             style: TextStyle(
-                              color: AppColor.textBlack,
-                              fontSize: _descSize,
+                              color: AppColor.textGrey,
+                              fontSize: _tagSize,
+                              fontWeight: FontWeight.w200,
                             ),
+                            maxLines: 1,
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
-                        ),
-                         )
-                         : SizedBox(height: 1,),
-                      ],
+                            ) : SizedBox(height: 1,),
+                            SizedBox(height: mobile?4:12,),
+                          _newsDataModel.title.isNotEmpty
+                              ? Text(
+                                _newsDataModel.title,
+                                style: TextStyle(
+                                  color: AppColor.textBlack,
+                                  fontSize: _headlineSize,
+                                  fontWeight: mobile ? FontWeight.w600 : FontWeight.bold,
+                                ),
+                              ) : SizedBox(height: 1,),
+                          SizedBox(height: mobile?4:12,),
+                          _newsDataModel.description.isNotEmpty
+                              ? Text(
+                                "${get_description(_newsDataModel.description)}...",
+                                style: TextStyle(
+                                  color: AppColor.textBlack,
+                                  fontSize: _descSize,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ) : SizedBox(height: 1,),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -147,58 +156,57 @@ class NewsWidgetElementHorizontal extends StatelessWidget{
     );
   }
 
+  Widget get_news_image(String url,double _borderRadius)
+  {
+    try{
+      if(Platform.isIOS||Platform.isAndroid)
+      {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(_borderRadius),
+          clipBehavior: Clip.hardEdge,
+          child: url.isNotEmpty
+              ? Image.network(url,
+            headers:  {"Access-Control-Allow-Origin": "*"},
+            fit: BoxFit.cover,
+          ) : Image.asset("images/fire_logo.jpg",),
+        );
+      }
+      else
+      {
+        return new  NewsImage(url);
+      }
+    }
+    catch(e)
+    {
+      return new NewsImage(url);
+    }
+
+  }
+
   on_pressed(NewsDataModel _datamodel,BuildContext context)
   async {
-
-    if(Platform.isAndroid || Platform.isIOS)
-    {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>WebWidget(_datamodel)));
-      // WebView(
-      //   initialUrl: url,
-      //   javascriptMode: JavascriptMode.unrestricted,
-      //   navigationDelegate: (NavigationRequest request) {
-      //     if (_firstnavigate) {
-      //       _firstnavigate = false;
-      //       return NavigationDecision.navigate;
-      //     } else {
-      //       launch(request.url);
-      //       return NavigationDecision.prevent;
-      //     }
-      //   },
-      // );
-    }
-    else
-    {
+    try{
+      if(Platform.isAndroid || Platform.isIOS)
+      {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>WebWidget(_datamodel)));
+      }
+      else
+      {
+        await canLaunch(_datamodel.url) ? await launch(_datamodel.url) : throw 'Could not launch ${_datamodel.url}';
+      }
+    } catch(e){
       await canLaunch(_datamodel.url) ? await launch(_datamodel.url) : throw 'Could not launch ${_datamodel.url}';
     }
-
-    // if(Platform.isAndroid || Platform.isIOS)
-    // {
-    //   WebView(
-    //     initialUrl: url,
-    //     javascriptMode: JavascriptMode.unrestricted,
-    //     navigationDelegate: (NavigationRequest request) {
-    //       if (_firstnavigate) {
-    //         _firstnavigate = false;
-    //         return NavigationDecision.navigate;
-    //       } else {
-    //         launch(request.url);
-    //         return NavigationDecision.prevent;
-    //       }
-    //     },
-    //   );
-    // }
-    // else
-    //   {
-    //     launchURL(url);
-    //   }
-    // Platform.isAndroid || Platform.isIOS
-    //     ?  : ElevatedButton(
-    //   onPressed: () => launchURL(url),
-    //   child: Text('Go to Website'),
-    // )
-    // return
   }
+
+  // Widget get_image(String url, bool mobile)
+  // {
+  //   // return CachedNetworkImageProvider(
+  //   //   url,
+  //   //   headers: {"Access-Control-Allow-Origin": "*"},
+  //   //   imageRenderMethodForWeb: ImageRenderMethodForWeb.HtmlImage,
+  //   // );
+  // }
 
   String get_description(String description)
   {

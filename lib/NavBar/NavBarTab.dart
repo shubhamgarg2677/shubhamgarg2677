@@ -61,11 +61,7 @@ class NavBarTab extends StatelessWidget{
               if (snapshot.hasData) {
                 switch (snapshot.data.status) {
                   case Status.LOADING:
-                    return Container(
-                      height: 20,
-                      width: 20,
-                      child: ShowProgress(),
-                    );
+                    return ShowProgress();
                     break;
                   case Status.COMPLETED:
                     return ListView.builder(
@@ -77,11 +73,7 @@ class NavBarTab extends StatelessWidget{
                     );
                     break;
                   case Status.ERROR:
-                    return Container(
-                      height: 20,
-                      width: 20,
-                      child: ShowProgress(),
-                    );
+                    return ShowProgress();
                     break;
                 }
               }
